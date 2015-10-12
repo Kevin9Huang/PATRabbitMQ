@@ -14,15 +14,14 @@ public class ClientRabbit {
     public ClientRabbit() throws IOException, TimeoutException {
         emitLogTopic = new EmitLogTopic();
         name = createRandomName(RandomNameLength);
-        System.out.println("Name : "+name);
         receiveLogsTopic = new ReceiveLogsTopic();
-        JoinChannel("LogChannel");
+        //JoinChannel("LogChannel");
         new Thread(receiveLogsTopic).run();
     }
 
     public static void main(String[] args) throws IOException, TimeoutException {
        ClientRabbit client = new ClientRabbit();
-        client.leaveChannel("LogChannel");
+        //client.leaveChannel("LogChannel");
         Scanner sc = new Scanner(System.in);
         System.out.println("Client "+name+" created successfully");
         String input = "";
