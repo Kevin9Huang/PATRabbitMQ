@@ -50,7 +50,6 @@ public class ClientRabbit {
         String characters = "";
         characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
-
         int charactersLength = characters.length();
 
         for (int i = 0; i < length; i++) {

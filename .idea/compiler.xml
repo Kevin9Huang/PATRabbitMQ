@@ -25,5 +25,8 @@
         <module name="PATRabbitMQ" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="PATRabbitMQ" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -4,8 +4,6 @@
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 public class ReceiveLogsTopic implements Runnable {
@@ -24,7 +22,6 @@ public class ReceiveLogsTopic implements Runnable {
         queueName = channel.queueDeclare().getQueue();
     }
 
-    @Override
     public void run() {
         Consumer consumer = new DefaultConsumer(channel) {
             @Override
