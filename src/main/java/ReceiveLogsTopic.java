@@ -12,12 +12,17 @@ public class ReceiveLogsTopic implements Runnable {
     private final Connection connection;
     private final Channel channel;
 
+    private final ClientRabbit client;
+
     private String queueName;
 
     public ReceiveLogsTopic(ClientRabbit client) throws IOException, TimeoutException {
+        this.client = client;
+
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(client.host);
-        factory.setPort(client.port);
+
+        factory.setHost(this.client.host);
+        factory.setPort(this.client.port);
 
         connection = factory.newConnection();
 
@@ -33,7 +38,7 @@ public class ReceiveLogsTopic implements Runnable {
                                        AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 String output = String.format("[%s]%s",envelope.getRoutingKey(),message);
-                System.out.println(output);
+                client.pushMessage(output);
             }
         };
         try {

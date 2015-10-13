@@ -15,8 +15,8 @@ public class EmitLogTopic {
     private static final String EXCHANGE_NAME = "topic_logs";
 
     private Connection connection;
-    private static Channel channel;
-    private static List<String> joinedChannels;
+    private Channel channel;
+    private List<String> joinedChannels;
 
     public EmitLogTopic(ClientRabbit client) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
@@ -41,7 +41,7 @@ public class EmitLogTopic {
             }
         }
         else{
-            System.out.println("You must join a channel first");
+            System.err.println("You must join a channel first");
         }
     }
 
@@ -58,11 +58,20 @@ public class EmitLogTopic {
     }
 
     public void addChannel(String channelName){
-        joinedChannels.add(channelName);
+        if (joinedChannels.contains(channelName)) {
+            System.err.printf("Already joined channel %s!\n", channelName);
+        } else {
+            joinedChannels.add(channelName);
+            System.out.println("Joined channel " + channelName);
+        }
     }
 
     public void leaveChannel(String channelName){
-        joinedChannels.remove(channelName);
+        if (joinedChannels.contains(channelName)) {
+            joinedChannels.remove(channelName);
+        } else {
+            System.err.printf("You are not a member of channel %s!\n", channelName);
+        }
     }
     //...
 }

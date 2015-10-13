@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
@@ -14,8 +16,16 @@ public class ClientRabbit {
     public final String host;
     public final int port;
 
+    private List<String> messages;
+
+    public void pushMessage(String message) {
+        messages.add(message);
+    }
+
     public ClientRabbit(String host, int port) throws IOException, TimeoutException {
-        name = createRandomName(RandomNameLength);
+        messages = new ArrayList<>();
+
+        this.name = createRandomName(RandomNameLength);
         this.host = host;
         this.port = port;
 
@@ -46,6 +56,15 @@ public class ClientRabbit {
         System.out.println("Client " + client.name + " created successfully");
         String input;
         do {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                //
+            }
+            if (!client.messages.isEmpty()) {
+                client.Show();
+            }
+
             System.out.printf("[%s] > ", client.name);
             input = sc.nextLine();
             client.ProcessInput(input);
@@ -67,8 +86,8 @@ public class ClientRabbit {
     }
 
     private String createRandomName(int length){
-        StringBuffer buffer = new StringBuffer();
-        String characters = "";
+        StringBuilder buffer = new StringBuilder();
+        String characters;
         characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
         int charactersLength = characters.length();
@@ -101,6 +120,17 @@ public class ClientRabbit {
         emitLogTopic.sendMessageToChannel(outmessage,channelName);
     }
 
+    private void Show() {
+        if (messages.isEmpty()) {
+            System.out.println("No new messages");
+        } else {
+            for (String message: messages) {
+                System.out.println(message);
+            }
+            messages.clear();
+        }
+    }
+
     public void ProcessInput(String input) throws IOException {
         String command, commandArg = "";
 
@@ -125,6 +155,8 @@ public class ClientRabbit {
                 leaveChannel(commandArg);
             } else if (command.equalsIgnoreCase("exit")) {
                 Exit();
+            } else if (command.equalsIgnoreCase("show")) {
+                Show();
             }
 
         } else if (input.startsWith("@")) {
