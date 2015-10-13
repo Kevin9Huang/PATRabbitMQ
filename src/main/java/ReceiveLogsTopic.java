@@ -14,10 +14,10 @@ public class ReceiveLogsTopic implements Runnable {
 
     private String queueName;
 
-    public ReceiveLogsTopic() throws IOException, TimeoutException {
+    public ReceiveLogsTopic(ClientRabbit client) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(ClientRabbit.host);
-        factory.setPort(ClientRabbit.port);
+        factory.setHost(client.host);
+        factory.setPort(client.port);
 
         connection = factory.newConnection();
 

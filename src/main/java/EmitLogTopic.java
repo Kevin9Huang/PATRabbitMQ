@@ -10,21 +10,25 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by Kevin on 10/12/2015.
  */
-public class EmitLogTopic{
+public class EmitLogTopic {
 
     private static final String EXCHANGE_NAME = "topic_logs";
-    private ConnectionFactory factory;
+
     private Connection connection;
     private static Channel channel;
     private static List<String> joinedChannels;
 
-    public EmitLogTopic() throws IOException, TimeoutException {
-        factory = new ConnectionFactory();
-        factory.setHost("localhost");
+    public EmitLogTopic(ClientRabbit client) throws IOException, TimeoutException {
+        ConnectionFactory factory = new ConnectionFactory();
+
+        factory.setHost(client.host);
+        factory.setPort(client.port);
+
         connection = factory.newConnection();
         channel = connection.createChannel();
         channel.exchangeDeclare(EXCHANGE_NAME, "topic");
-        joinedChannels = new ArrayList<String>();
+
+        joinedChannels = new ArrayList<>();
     }
     public void sendMessage(String message){
         if(!joinedChannels.isEmpty()) {

@@ -6,48 +6,58 @@ import java.util.concurrent.TimeoutException;
  * Created by Kevin on 10/12/2015.
  */
 public class ClientRabbit {
-    private static EmitLogTopic emitLogTopic;
-    private static ReceiveLogsTopic receiveLogsTopic;
+    private final EmitLogTopic emitLogTopic;
+    private final ReceiveLogsTopic receiveLogsTopic;
     private int RandomNameLength = 10;
-    private static String name;
+    private String name;
 
-    public static String host = "localhost";
-    public static int port = 5672;
+    public final String host;
+    public final int port;
 
-    public ClientRabbit() throws IOException, TimeoutException {
-        emitLogTopic = new EmitLogTopic();
+    public ClientRabbit(String host, int port) throws IOException, TimeoutException {
         name = createRandomName(RandomNameLength);
-        receiveLogsTopic = new ReceiveLogsTopic();
+        this.host = host;
+        this.port = port;
+
+        emitLogTopic = new EmitLogTopic(this);
+        receiveLogsTopic = new ReceiveLogsTopic(this);
+
         //JoinChannel("LogChannel");
         new Thread(receiveLogsTopic).run();
     }
 
     public static void main(String[] args) throws IOException, TimeoutException {
-        ClientRabbit client = new ClientRabbit();
-        if (args.length > 2) {
-            ClientRabbit.host = args[1];
+        String host = "localhost";
+        int port = 5672;
 
-            if (args.length > 3) {
-                ClientRabbit.port = Integer.parseInt(args[2]);
+        if (args.length > 0) {
+            host = args[0];
+
+            if (args.length > 1) {
+                port = Integer.parseInt(args[1]);
             }
         }
+        System.out.printf("Connecting to RabbitMQ server at %s:%d\n", host, port);
+
+        ClientRabbit client = new ClientRabbit(host, port);
 
         //client.leaveChannel("LogChannel");
         Scanner sc = new Scanner(System.in);
-        System.out.println("Client "+name+" created successfully");
-        String input = "";
+        System.out.println("Client " + client.name + " created successfully");
+        String input;
         do {
+            System.out.printf("[%s] > ", client.name);
             input = sc.nextLine();
-            ProcessInput(input);
-        }while(!input.toLowerCase().startsWith("/exit"));
+            client.ProcessInput(input);
+        } while (!input.toLowerCase().startsWith("/exit"));
     }
 
-    private static void JoinChannel(String channelName) throws IOException {
+    private void JoinChannel(String channelName) throws IOException {
         receiveLogsTopic.addChannel(channelName);
         emitLogTopic.addChannel(channelName);
     }
 
-    private static void leaveChannel(String channelName) throws IOException {
+    private void leaveChannel(String channelName) throws IOException {
         receiveLogsTopic.leaveChannel(channelName);
         emitLogTopic.leaveChannel(channelName);
     }
@@ -70,26 +80,28 @@ public class ClientRabbit {
         return buffer.toString();
     }
     
-    private static void setNick(String WantedName){
+    private void setNick(String WantedName){
         name = WantedName;
     }
 
-    private static void Exit() throws IOException {
+    private void Exit() throws IOException {
         emitLogTopic.closeConnection();
         System.exit(0);
     }
 
-    private static void Say(String message){
+    private void Say(String message){
         String outmessage = String.format("(%s)%s",name,message);
+
         emitLogTopic.sendMessage(outmessage);
     }
 
-    private static void Say(String message,String channelName){
-        String outmessage = String.format("(%s)%s",name,message);
+    private void Say(String message,String channelName){
+        String outmessage = String.format("(%s)%s", name, message);
+
         emitLogTopic.sendMessageToChannel(outmessage,channelName);
     }
 
-    public static void ProcessInput(String input) throws IOException {
+    public void ProcessInput(String input) throws IOException {
         String command, commandArg = "";
 
         if (input.startsWith("/")) {
