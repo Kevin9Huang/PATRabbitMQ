@@ -8,15 +8,19 @@ import java.util.concurrent.TimeoutException;
 
 public class ReceiveLogsTopic implements Runnable {
     private static final String EXCHANGE_NAME = "topic_logs";
-    private ConnectionFactory factory;
-    private Connection connection;
-    private Channel channel;
+
+    private final Connection connection;
+    private final Channel channel;
+
     private String queueName;
 
     public ReceiveLogsTopic() throws IOException, TimeoutException {
-        factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(ClientRabbit.host);
+        factory.setPort(ClientRabbit.port);
+
         connection = factory.newConnection();
+
         channel = connection.createChannel();
         channel.exchangeDeclare(EXCHANGE_NAME, "topic");
         queueName = channel.queueDeclare().getQueue();

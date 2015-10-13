@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PATRabbitMQ.iml" filepath="$PROJECT_DIR$/PATRabbitMQ.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pat-rabbitmq.iml" filepath="$PROJECT_DIR$/pat-rabbitmq.iml" />
     </modules>
   </component>
 </project>

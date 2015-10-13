@@ -11,6 +11,9 @@ public class ClientRabbit {
     private int RandomNameLength = 10;
     private static String name;
 
+    public static String host = "localhost";
+    public static int port = 5672;
+
     public ClientRabbit() throws IOException, TimeoutException {
         emitLogTopic = new EmitLogTopic();
         name = createRandomName(RandomNameLength);
@@ -20,7 +23,15 @@ public class ClientRabbit {
     }
 
     public static void main(String[] args) throws IOException, TimeoutException {
-       ClientRabbit client = new ClientRabbit();
+        ClientRabbit client = new ClientRabbit();
+        if (args.length > 2) {
+            ClientRabbit.host = args[1];
+
+            if (args.length > 3) {
+                ClientRabbit.port = Integer.parseInt(args[2]);
+            }
+        }
+
         //client.leaveChannel("LogChannel");
         Scanner sc = new Scanner(System.in);
         System.out.println("Client "+name+" created successfully");
